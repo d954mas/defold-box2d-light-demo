@@ -1,0 +1,22 @@
+local GAME_WORLD = require "world.game.game_world"
+local WORLD = require "world.world"
+local LEVELS = require "world.game.levels.levels"
+
+function init(self)
+	WORLD.game:level_loaded(LEVELS.load_level(LEVELS.LEVELS_LIST[LEVELS.CURRENT_LEVEL_IDX]))
+	msg.post(".", "acquire_input_focus")
+end
+
+function final(self)
+	msg.post(".", "release_input_focus")
+	WORLD.game:final()
+end
+
+function update(self, dt)
+	WORLD.game:update(dt)
+end
+
+function on_input(self, action_id, action)
+	WORLD.game:on_input(action_id, action)
+end
+

@@ -1,0 +1,49 @@
+
+// Positions can be world or local space, since world and normal
+// matrices are identity for world vertex space materials.
+// If world vertex space is selected, you can remove the
+// normal matrix multiplication for optimal performance.
+
+attribute highp vec4 position;
+attribute mediump vec3 normal;
+
+uniform mediump mat4 mtx_worldview;
+uniform mediump mat4 mtx_view;
+uniform mediump mat4 mtx_proj;
+uniform mediump mat4 mtx_normal;
+uniform mediump vec4 light;
+
+
+uniform vec4 dir;
+uniform vec4 size;
+attribute mediump vec2 texcoord0;
+
+varying vec2 v_texCoords0;
+varying vec2 v_texCoords1;
+varying vec2 v_texCoords2;
+varying vec2 v_texCoords3;
+varying vec2 v_texCoords4;
+
+
+
+void main()
+{
+    float FBO_H = size.y;
+    float FBO_W = size.x;
+
+    vec2 futher = vec2(3.2307692308 / FBO_W, 3.2307692308 / FBO_H );
+    vec2 closer = vec2(1.3846153846 / FBO_W, 1.3846153846 / FBO_H );
+
+	vec4 p = mtx_worldview * vec4(position.xyz, 1.0);
+	vec2 f = futher * dir.xy;
+	vec2 c = closer * dir.xy;
+	v_texCoords0 = texcoord0 - f;
+	v_texCoords1 = texcoord0 - c;
+	v_texCoords2 = texcoord0;
+	v_texCoords3 = texcoord0 + c;
+	v_texCoords4 = texcoord0 + f;
+	
+
+	gl_Position = mtx_proj * p;
+}
+

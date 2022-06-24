@@ -1,0 +1,136 @@
+local DIRTYLARRY = require "gooey-dirtylarry.dirtylarry"
+local WORLD = require "world.world"
+local LEVELS = require "world.game.levels.levels"
+local CHECKBOX = require "libs.gui.checkbox_with_label"
+local COMMON = require "libs.common"
+local PROXY_STATUS = {
+	LOADED = "LOADED",
+	UNLOADED = "UNLOADED"
+}
+
+local LOAD_TYPE = {
+	TILED = "TILED",
+}
+
+local function find_collection(self, sender)
+	local sender_url = msg.url(sender)
+	for _, collection in pairs(self.collections) do
+		if (sender_url.path == collection.proxy.path and sender_url.fragment == collection.proxy.fragment) then
+			return collection
+		end
+	end
+end
+
+local function load_game_level(self)
+	assert(not self.load_co, "already have load")
+	self.load_co = coroutine.create(function()
+		local need_unload = false
+		--UNLOAD ALL
+		for _, collection in pairs(self.collections) do
+			if (collection.status == PROXY_STATUS.LOADED) then
+				msg.post(collection.proxy, "unload")
+				need_unload = true
+			end
+		end
+		--WAIT WHILE ALL UNLOADED
+		while (need_unload) do
+			coroutine.yield()
+			need_unload = false
+			for _, collection in pairs(self.collections) do
+				if (collection.status == PROXY_STATUS.LOADED) then
+					need_unload = true
+					break
+				end
+			end
+		end
+
+		--START LOAD
+		msg.post(self.collections.game_tiled.proxy, "async_load")
+		while (self.collections.game_tiled.status == PROXY_STATUS.UNLOADED) do coroutine.yield() end
+	end)
+
+end
+
+function init(self)
+	self.load_co = nil
+	self.collections = {
+		game_tiled = {
+			proxy = msg.url("game:/proxy#game_tiled"),
+			status = PROXY_STATUS.UNLOADED
+		},
+	}
+	self.vh = {
+		chb_physics = CHECKBOX("chb_physics"),
+		chb_move_camera = CHECKBOX("chb_move_camera"),
+		chb_rays = CHECKBOX("chb_rays"),
+		chb_light_map = CHECKBOX("chb_light_map"),
+	}
+	self.vh.chb_rays:set_checked(WORLD.debug_state.debug_light)
+	self.vh.chb_move_camera:set_checked(WORLD.debug_state.move_camera)
+	self.vh.chb_physics:set_checked(WORLD.debug_state.draw_physics)
+	self.vh.chb_light_map:set_checked(WORLD.debug_state.draw_light_map)
+
+	self.vh.chb_rays:set_input_listener(function()
+		WORLD.debug_state.debug_light = self.vh.chb_rays.checked
+	end)
+	self.vh.chb_move_camera:set_input_listener(function()
+		WORLD.debug_state.move_camera = self.vh.chb_move_camera.checked
+	end)
+	self.vh.chb_physics:set_input_listener(function()
+		WORLD.debug_state.draw_physics = self.vh.chb_physics.checked
+	end)
+
+	self.vh.chb_light_map:set_input_listener(function()
+		WORLD.debug_state.draw_light_map = self.vh.chb_light_map.checked
+	end)
+
+	msg.post(".", "acquire_input_focus")
+	load_game_level(self)
+end
+
+function final(self)
+	msg.post(".", "release_input_focus")
+end
+
+function update(self, dt)
+	--keep on top
+	msg.post(".", "acquire_input_focus")
+	if (self.load_co) then
+		local ok, res = coroutine.resume(self.load_co, dt)
+		if not ok then
+			print("COROUTINE ERROR")
+			print(res .. debug.traceback(self.load_co, "", 1), "Error in coroutine", 1)
+			self.load_co = nil
+		else
+			if (coroutine.status(self.load_co) == "dead") then
+				self.load_co = nil
+			end
+		end
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if (message_id == hash("proxy_loaded")) then
+		local collection = find_collection(self, sender)
+		collection.status = PROXY_STATUS.LOADED
+		msg.post(collection.proxy, "acquire_input_focus")
+		msg.post(collection.proxy, "init")
+		msg.post(collection.proxy, "enable")
+	elseif (message_id == hash("proxy_unloaded")) then
+		local collection = find_collection(self, sender)
+		collection.status = PROXY_STATUS.UNLOADED
+		msg.post(collection.proxy, "release_input_focus")
+	end
+end
+
+function on_input(self, action_id, action)
+	COMMON.INPUT.handle_pressed_keys(action_id, action)
+	local btn = DIRTYLARRY.button("btn_restart", action_id, action, function(button)
+		load_game_level(self, LOAD_TYPE.TILED)
+	end)
+	if(btn.consumed)then return true end
+	if(self.vh.chb_move_camera:on_input(action_id,action)) then return true end
+	if(self.vh.chb_physics:on_input(action_id,action)) then return true end
+	if(self.vh.chb_rays:on_input(action_id,action)) then return true end
+	if(self.vh.chb_light_map:on_input(action_id,action)) then return true end
+end

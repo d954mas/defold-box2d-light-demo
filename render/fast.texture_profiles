@@ -1,0 +1,66 @@
+path_settings {
+  path: "/assets/images/bg/**/*.atlas"
+  profile: "RGB BG"
+}
+path_settings {
+  path: "/assets/map/images/bg/*.atlas"
+  profile: "RGB BG"
+}
+path_settings {
+  path: "/assets/images/gui/ui/gui_ui.atlas"
+  profile: "Default"
+}
+path_settings {
+  path: "/assets/spine/**/*.atlas"
+  profile: "Default"
+}
+path_settings {
+  path: "/assets/map/images/**/*.atlas"
+  profile: "Default No MipMaps"
+}
+path_settings {
+  path: "**"
+  profile: "Default No MipMaps"
+}
+profiles {
+  name: "Default"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGBA
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_DEFAULT
+    }
+    mipmaps: true
+    max_texture_size: 2048
+    premultiply_alpha: true
+  }
+}
+profiles {
+  name: "RGB BG"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGB_16BPP
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_WEBP_LOSSY
+    }
+    mipmaps: false
+    max_texture_size: 2048
+    premultiply_alpha: true
+  }
+}
+profiles {
+  name: "Default No MipMaps"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGBA
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_DEFAULT
+    }
+    mipmaps: false
+    max_texture_size: 2048
+    premultiply_alpha: true
+  }
+}

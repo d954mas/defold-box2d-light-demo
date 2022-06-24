@@ -1,0 +1,28 @@
+[
+	{
+		"name": "position",
+		"type": "float32",
+		"count": 3,
+		"data": [
+		]
+	},
+	{
+		"name": "color0",
+		"type": "float32",
+		"count": 4,
+		"data": [
+		]
+	},
+    {
+        "name": "normal",
+        "type": "float32",
+        "count": 3,
+        "data": []
+    },
+    {
+              "name": "data",
+              "type": "float32",
+              "count": 3,
+              "data": []
+          }
+]

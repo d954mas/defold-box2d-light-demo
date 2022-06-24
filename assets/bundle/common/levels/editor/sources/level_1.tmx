@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.8" tiledversion="1.8.2" orientation="orthogonal" renderorder="left-down" width="46" height="38" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="325">
+ <editorsettings>
+  <export target="../../level_1.lua" format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" source="../../tilesets/tile.tsx"/>
+ <tileset firstgid="265" source="../../tilesets/objects.tsx"/>
+ <layer id="1" name="front_1" width="46" height="38">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,22,0,0,22,0,0,0,0,0,0,22,0,0,0,44,0,0,0,22,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,22,0,0,22,0,0,0,0,0,0,22,0,0,0,0,0,0,0,66,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,22,0,0,66,0,0,0,0,0,0,22,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,66,0,0,0,0,0,0,0,0,0,22,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,66,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,77,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,2,3,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,56,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,2,3,4,0,0,0,0,0,0,0,0,0,2,3,4,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,2,3,3,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,4,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,0,54,0,0,0,0,0,0,0,0,56,0,0,54,0,1,1,1,1,0,55,0,0,77,0,54,0,0,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,29,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,28,1,1,29,3,3,3,3,3,3,3,3,3,28,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="3" name="geometry">
+  <object id="304" x="0" y="0" width="2944" height="576"/>
+  <object id="305" x="0" y="576" width="576" height="1856"/>
+  <object id="306" x="576" y="1856" width="2368" height="576"/>
+  <object id="307" x="2368" y="576" width="576" height="1280"/>
+  <object id="311" x="1536" y="1664" width="256" height="192"/>
+  <object id="312" x="1216" y="1408" width="192" height="64"/>
+  <object id="313" x="896" y="1600" width="256" height="64"/>
+  <object id="315" x="1984" y="1408" width="192" height="64"/>
+  <object id="316" x="896" y="1280" width="192" height="64"/>
+ </objectgroup>
+ <objectgroup id="4" name="decor"/>
+ <objectgroup id="5" name="decor_bg">
+  <object id="308" x="1056" y="656" width="864" height="320">
+   <text fontfamily="MS Shell Dlg 2" pixelsize="120" wrap="1">HELLO WORLD</text>
+  </object>
+ </objectgroup>
+ <objectgroup id="2" name="objects">
+  <object id="310" gid="265" x="704" y="1856" width="105" height="150"/>
+  <object id="317" gid="266" x="1424" y="613" width="64" height="64">
+   <properties>
+    <property name="angle_begin" type="float" value="245"/>
+    <property name="angle_end" type="float" value="295"/>
+    <property name="color" type="color" value="#c8282828"/>
+    <property name="distance" type="float" value="3000"/>
+   </properties>
+  </object>
+  <object id="318" gid="266" x="832" y="1088" width="64" height="64">
+   <properties>
+    <property name="angle_begin" type="float" value="225"/>
+    <property name="angle_end" type="float" value="315"/>
+    <property name="color" type="color" value="#c8ff00ff"/>
+    <property name="distance" type="float" value="600"/>
+    <property name="rotation_speed" type="float" value="60"/>
+   </properties>
+  </object>
+  <object id="319" gid="266" x="1856" y="1152" width="64" height="64">
+   <properties>
+    <property name="angle_begin" type="float" value="0"/>
+    <property name="angle_end" type="float" value="360"/>
+    <property name="color" type="color" value="#9bff0000"/>
+    <property name="distance" type="float" value="900"/>
+    <property name="rotation_speed" type="float" value="0"/>
+   </properties>
+  </object>
+  <object id="320" gid="266" x="832" y="1088" width="64" height="64">
+   <properties>
+    <property name="angle_begin" type="float" value="225"/>
+    <property name="angle_end" type="float" value="315"/>
+    <property name="color" type="color" value="#c8ffff00"/>
+    <property name="distance" type="float" value="600"/>
+    <property name="rotation_speed" type="float" value="-60"/>
+   </properties>
+  </object>
+  <object id="321" gid="266" x="2112" y="832" width="64" height="64">
+   <properties>
+    <property name="angle_begin" type="float" value="0"/>
+    <property name="angle_end" type="float" value="360"/>
+    <property name="color" type="color" value="#9b00ff00"/>
+    <property name="distance" type="float" value="500"/>
+    <property name="rotation_speed" type="float" value="0"/>
+   </properties>
+  </object>
+  <object id="322" gid="266" x="1856" y="832" width="64" height="64">
+   <properties>
+    <property name="angle_begin" type="float" value="0"/>
+    <property name="angle_end" type="float" value="360"/>
+    <property name="color" type="color" value="#9b5500ff"/>
+    <property name="distance" type="float" value="500"/>
+    <property name="rotation_speed" type="float" value="0"/>
+   </properties>
+  </object>
+  <object id="323" gid="266" x="2112" y="1152" width="64" height="64">
+   <properties>
+    <property name="angle_begin" type="float" value="0"/>
+    <property name="angle_end" type="float" value="360"/>
+    <property name="color" type="color" value="#9bffff7f"/>
+    <property name="distance" type="float" value="500"/>
+    <property name="rotation_speed" type="float" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

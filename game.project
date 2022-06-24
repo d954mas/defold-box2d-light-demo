@@ -1,0 +1,53 @@
+[project]
+title = defold-box2d-light-demo
+custom_resources = assets/bundle/common/levels/editor/result/
+bundle_resources = assets/bundle
+dependencies#0 = https://github.com/DanEngelbrecht/LuaScriptInstance/archive/master.zip
+dependencies#1 = https://github.com/d954mas/defold-box2d/archive/refs/tags/1.0.0.zip
+dependencies#2 = https://github.com/britzl/gooey-dirtylarry/archive/refs/tags/1.0.0.zip
+dependencies#3 = https://github.com/britzl/gooey/archive/refs/tags/9.1.1.zip
+
+[bootstrap]
+main_collection = /game/game.collectionc
+render = /render/my.renderc
+
+[input]
+game_binding = /input/game.input_bindingc
+use_accelerometer = 0
+
+[display]
+width = 960
+height = 540
+
+[ios]
+bundle_identifier = com.example.todo
+
+[osx]
+bundle_identifier = com.example.todo
+
+[android]
+input_method = HiddenInputField
+
+[script]
+shared_state = 1
+
+[physics]
+gravity_y = -1000.0
+scale = 0.01
+debug = 0
+
+[sprite]
+max_count = 2048
+
+[collection]
+max_instances = 2048
+
+[resource]
+max_resources = 2048
+
+[html5]
+scale_mode = fit
+
+[native_extension]
+app_manifest = /box2d/manifest.appmanifest
+

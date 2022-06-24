@@ -1,0 +1,104 @@
+path_settings {
+  path: "/assets/images/debug/**/.atlas"
+  profile: "RGBA16 UASTC"
+}
+path_settings {
+  path: "/assets/images/bg/*.atlas"
+  profile: "RGB BG"
+}
+path_settings {
+  path: "/assets/textures/*.atlas"
+  profile: "Textures"
+}
+path_settings {
+  path: "**"
+  profile: "Default No MipMaps"
+}
+path_settings {
+  path: "**"
+  profile: "Default"
+}
+profiles {
+  name: "Default"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGBA
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_BASIS_UASTC
+    }
+    mipmaps: true
+    max_texture_size: 2048
+    premultiply_alpha: true
+  }
+}
+profiles {
+  name: "RGB BG"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGB
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_BASIS_UASTC
+    }
+    mipmaps: false
+    max_texture_size: 2048
+    premultiply_alpha: true
+  }
+}
+profiles {
+  name: "Default No MipMaps"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGBA
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_BASIS_UASTC
+    }
+    mipmaps: false
+    max_texture_size: 2048
+    premultiply_alpha: true
+  }
+}
+profiles {
+  name: "Lume Alpha No MipMaps"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_LUMINANCE_ALPHA
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_BASIS_UASTC
+    }
+    mipmaps: false
+    max_texture_size: 2048
+    premultiply_alpha: true
+  }
+}
+profiles {
+  name: "RGBA16 UASTC"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGBA_16BPP
+      compression_level: BEST
+      compression_type: COMPRESSION_TYPE_BASIS_UASTC
+    }
+    mipmaps: false
+    max_texture_size: 256
+    premultiply_alpha: true
+  }
+}
+profiles {
+  name: "Textures"
+  platforms {
+    os: OS_ID_GENERIC
+    formats {
+      format: TEXTURE_FORMAT_RGBA
+      compression_level: NORMAL
+      compression_type: COMPRESSION_TYPE_DEFAULT
+    }
+    mipmaps: false
+    max_texture_size: 0
+    premultiply_alpha: false
+  }
+}

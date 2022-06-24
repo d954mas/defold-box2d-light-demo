@@ -1,0 +1,349 @@
+local COMMON = require "libs.common"
+local CONSTANTS = require "libs.constants"
+local CAMERAS = require "libs.cameras"
+local WORLD = require "world.world"
+local TAG = "Render"
+
+local HASH_LIGHT_MAP = hash("light_map")
+local HASH_BLUR = hash("blur")
+local LIGHT_MAP_MAX_TARGET_SIZE = 2048
+
+---@class Render
+local Render = COMMON.new_n28s()
+--region init
+function Render:init()
+	self.clear_color = COMMON.LUME.color_parse_hex("#000000")
+	--first size is game size. Or cameras bad in html build
+	self.screen_size = {
+		w = CONSTANTS.PLATFORM_IS_WEB and render.get_width() or render.get_window_width(),
+		h = CONSTANTS.PLATFORM_IS_WEB and render.get_height() or render.get_window_height(),
+	}
+	self.config_size = {
+		w = render.get_width(),
+		h = render.get_height()
+	}
+	self.size = {
+		w = render.get_width();
+		h = render.get_height()
+	}
+
+	self.light_config = {
+		blur_num = 1,
+		ambient_color = vmath.vector4(0, 0, 0, 0.16),
+	}
+
+	self:init_predicates()
+	self:init_render_targets()
+	self:init_buffers()
+	self:init_constants_buffers()
+	self:register_messages()
+	self.clear = { [render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0 }
+
+	COMMON.RENDER = self
+	CAMERAS:init()
+	self:window_size_changed()
+end
+
+function Render:create_render_target(name, params)
+	-- render target buffer parameters
+	local color_params = { format = params.format or render.FORMAT_RGBA,
+						   width = assert(params.w),
+						   height = assert(params.h),
+						   min_filter = params.min_filter or render.FILTER_LINEAR,
+						   mag_filter = params.mag_filter or render.FILTER_LINEAR,
+						   u_wrap = params.u_wrap or render.WRAP_CLAMP_TO_EDGE,
+						   v_wrap = params.v_wrap or render.WRAP_CLAMP_TO_EDGE }
+
+	local depth_params
+	if (params.has_depth) then
+		depth_params = { format = render.FORMAT_DEPTH,
+						 width = params.w,
+						 height = params.h,
+						 u_wrap = params.u_wrap or render.WRAP_CLAMP_TO_EDGE,
+						 v_wrap = params.v_wrap or render.WRAP_CLAMP_TO_EDGE }
+	end
+
+	return {
+		target = render.render_target(assert(name), { [render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params }),
+		w = params.w,
+		h = params.h
+	}
+end
+
+function Render:init_render_targets()
+	self.targets = {
+		light_map = self:create_render_target(HASH_LIGHT_MAP, { w = LIGHT_MAP_MAX_TARGET_SIZE, h = LIGHT_MAP_MAX_TARGET_SIZE }),
+		blur = nil
+	}
+	if (self.light_config.blur_num > 0) then
+		self.targets.blur = self:create_render_target(HASH_BLUR, { w = LIGHT_MAP_MAX_TARGET_SIZE, h = LIGHT_MAP_MAX_TARGET_SIZE })
+	end
+end
+
+function Render:init_buffers()
+	self.buffers = {}
+end
+
+function Render:init_predicates()
+	self.predicates = {
+		tile = render.predicate({ "tile" }),
+		model = render.predicate({ "model" }),
+		gui = render.predicate({ "gui" }),
+		text = render.predicate({ "text" }),
+		particle = render.predicate({ "particle" }),
+		gui_game = render.predicate({ "gui_game" }),
+		gui_game_bg = render.predicate({ "gui_game_bg" }),
+		game_bg = render.predicate({ "game_bg" }),
+		light = render.predicate({ "light" }),
+		model_light_map = render.predicate({ "model_light_map" }),
+		tile_before_light = render.predicate({ "tile_before_light" }),
+	}
+
+end
+
+function Render:init_constants_buffers()
+	self.constants_buffers = {
+		blur = render.constant_buffer(),
+		shadows = render.constant_buffer(),
+	}
+	self.constants_buffers.blur.dir = vmath.vector4(1, 0, 0, 0)
+	self.constants_buffers.blur.size = vmath.vector4(0, 0, 0, 0)
+
+	local c = self.light_config.ambient_color
+	self.constants_buffers.shadows.ambientColor = vmath.vector4(c.x * c.w, c.y * c.w,
+			c.z * c.w, 1 - c.w)
+
+end
+
+function Render:register_messages()
+	self.msg_receiver = COMMON.MSG()
+	self.msg_receiver:add("window_resized", function(...)
+		local prev_w = self.screen_size.w
+		local prev_h = self.screen_size.h
+		self.screen_size.w = render.get_window_width()
+		self.screen_size.h = render.get_window_height()
+		if (prev_w ~= self.screen_size.w or prev_h ~= self.screen_size.h) then
+			self:window_size_changed()
+		end
+	end)
+end
+--endregion
+
+
+function Render:window_size_changed()
+	self.gui_proj = vmath.matrix4_orthographic(0, self.screen_size.w, 0, self.screen_size.h, -1000, 1000)
+	self.empty_view = vmath.matrix4()
+	CAMERAS:window_resized()
+	local size_w = LIGHT_MAP_MAX_TARGET_SIZE
+	self.targets.light_map.w = size_w
+	self.targets.light_map.h = math.ceil(size_w * self.screen_size.h / self.screen_size.w)
+	render.set_render_target_size(self.targets.light_map.target, self.targets.light_map.w, self.targets.light_map.h)
+
+	if (self.targets.blur) then
+		self.targets.blur.w = self.targets.light_map.w
+		self.targets.blur.h = self.targets.light_map.h
+		render.set_render_target_size(self.targets.blur.target, self.targets.blur.w, self.targets.blur.h)
+
+		self.constants_buffers.blur.size = vmath.vector4(self.targets.blur.w, self.targets.blur.h, 0, 0)
+	end
+end
+
+function Render:render_bg_game()
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+	render.set_view(self.empty_view)
+	render.set_view(CAMERAS.current:get_view())
+	render.set_projection(CAMERAS.current:get_proj())
+
+	render.set_depth_mask(false)
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.disable_state(render.STATE_CULL_FACE)
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+
+	render.draw(self.predicates.game_bg)
+end
+
+function Render:render_gui_game()
+	-- GUI Rendering
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+	render.set_view(CAMERAS.current:get_view())
+	render.set_projection(CAMERAS.current:get_proj())
+
+	render.enable_state(render.STATE_STENCIL_TEST)
+	render.draw(self.predicates.gui_game)
+	render.disable_state(render.STATE_STENCIL_TEST)
+end
+
+function Render:render_gui_game_bg()
+	-- GUI Rendering
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+	render.set_view(CAMERAS.current:get_view())
+	render.set_projection(CAMERAS.current:get_proj())
+
+	render.enable_state(render.STATE_STENCIL_TEST)
+	render.draw(self.predicates.gui_game_bg)
+	render.disable_state(render.STATE_STENCIL_TEST)
+end
+
+--region draw
+
+function Render:render_gui()
+	-- GUI Rendering
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+	render.set_view(self.empty_view)
+	render.set_projection(CAMERAS.current and CAMERAS.current.gui_proj or self.gui_proj)
+
+	render.enable_state(render.STATE_STENCIL_TEST)
+	render.draw(self.predicates.gui)
+	render.draw(self.predicates.text)
+	render.disable_state(render.STATE_STENCIL_TEST)
+end
+
+function Render:render_sprites_before_light()
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+	render.set_view(CAMERAS.current:get_view())
+	render.set_projection(CAMERAS.current:get_proj())
+
+	render.set_depth_mask(false)
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.disable_state(render.STATE_CULL_FACE)
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+
+	render.draw(self.predicates.tile_before_light)
+end
+
+function Render:render_sprites()
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+	render.set_view(CAMERAS.current:get_view())
+	render.set_projection(CAMERAS.current:get_proj())
+
+	render.set_depth_mask(false)
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+	render.disable_state(render.STATE_CULL_FACE)
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+
+	render.draw(self.predicates.model)
+	render.draw(self.predicates.tile)
+	render.draw(self.predicates.particle)
+	render.draw_debug3d()
+end
+
+function Render:render_to_light_map()
+	render.set_depth_mask(false)
+	--Blend function for lights rendering without shadows and diffusion
+	render.disable_state(render.STATE_DEPTH_TEST)
+	render.disable_state(render.STATE_STENCIL_TEST)
+
+	-- set render target so all drawing is done to it
+	render.set_render_target(self.targets.light_map.target, { })
+	render.clear({ [render.BUFFER_COLOR_BIT] = vmath.vector4(0, 0, 0, 0), [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0 })
+	render.set_viewport(0, 0,
+			self.targets.light_map.w, self.targets.light_map.h)
+	render.set_view(CAMERAS.current:get_view())
+	render.set_projection(CAMERAS.current:get_proj())
+
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE)
+	--render.disable_state(render.STATE_BLEND)
+	render.draw(self.predicates.light)
+	local draw_blur = WORLD.debug_state.blur and self.light_config.blur_num > 0
+	if (draw_blur) then
+		render.disable_state(render.STATE_BLEND)
+		render.enable_material("blur")
+		render.set_view(self.empty_view)
+		render.set_projection(vmath.matrix4_orthographic(-0.5, 0.5, -0.5, 0.5, -1, 1))
+	end
+
+	for i = 1, self.light_config.blur_num, 1 do
+		self.constants_buffers.blur.dir = vmath.vector4(1, 0, 0, 0)
+		render.set_render_target(self.targets.blur.target, { })
+		render.enable_texture(0, self.targets.light_map.target, render.BUFFER_COLOR_BIT)
+		render.draw(self.predicates.model_light_map, self.constants_buffers.blur)
+
+		render.set_render_target(self.targets.light_map.target, { })
+		render.enable_texture(0, self.targets.blur.target, render.BUFFER_COLOR_BIT)
+		self.constants_buffers.blur.dir = vmath.vector4(0, 1, 0, 0)
+		render.draw(self.predicates.model_light_map, self.constants_buffers.blur)
+
+		render.disable_texture(0)
+	end
+	if (draw_blur) then
+		render.disable_material("blur")
+		render.enable_state(render.STATE_BLEND)
+	end
+
+	render.set_render_target(render.RENDER_TARGET_DEFAULT)
+
+end
+
+function Render:render_light_map()
+	--draw shadows
+	render.enable_state(render.STATE_BLEND)
+	render.set_blend_func(render.BLEND_ONE, render.BLEND_ONE_MINUS_SRC_ALPHA)
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+	render.enable_texture(0, self.targets.light_map.target, render.BUFFER_COLOR_BIT)
+	render.set_view(self.empty_view)
+	render.set_projection(vmath.matrix4_orthographic(-0.5, 0.5, -0.5, 0.5, -1, 1))
+
+	render.enable_material("shadow")
+	render.draw(self.predicates.model_light_map, self.constants_buffers.shadows)
+	render.disable_material()
+	render.disable_texture(0)
+end
+
+function Render:render_light_map_debug()
+	render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+	render.set_viewport(0, 0,
+			300, 300 * math.ceil(self.targets.light_map.h / self.targets.light_map.w))
+	render.set_view(self.empty_view)
+	render.set_projection(vmath.matrix4_orthographic(-0.5, 0.5, -0.5, 0.5, -1, 1))
+	render.enable_texture(0, self.targets.light_map.target, render.BUFFER_COLOR_BIT)
+	render.draw(self.predicates.model_light_map)
+	render.disable_texture(0)
+
+	render.set_viewport(CAMERAS.current.viewport.x, CAMERAS.current.viewport.y,
+			CAMERAS.current.viewport.width, CAMERAS.current.viewport.height)
+end
+
+--endregion
+
+function Render:render_clear()
+	render.set_depth_mask(true)
+	render.set_stencil_mask(0xff)
+	render.clear(self.clear)
+end
+
+function Render:update(dt)
+	self:render_clear()
+	self:render_bg_game()
+	self:render_gui_game_bg()
+
+	self:render_sprites_before_light()
+	self:render_to_light_map()
+	self:render_light_map()
+	self:render_sprites()
+
+	self:render_gui_game()
+	self:render_gui()
+
+	if (WORLD.debug_state.draw_light_map) then
+		self:render_light_map_debug()
+	end
+end
+
+function Render:on_message(message_id, message)
+	self.msg_receiver:on_message(self, message_id, message)
+end
+
+COMMON.N28S.register(Render())
