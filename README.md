@@ -4,7 +4,7 @@ Example of box2d raycasting and meshes for 2d light for Defold game engine.
 Raycasting rays from light source. Then update mesh based on raycasting
 result.Then draw light meshes.
 
-Check this light in game [Mouse Rob]() (TODO ADD LINK)
+Check this light in game [Ninja Mouse](https://poki.com/en/g/ninja-mouse)
 
 
 Based on fork of [libgdx-box2dlights](https://github.com/piotr-j/box2dlights)
@@ -19,9 +19,16 @@ to be library, but you can copy code and use it in you projects.
 In this example i load level from tiled. More info [here](https://github.com/d954mas/defold-tiled-example)
 
 
+[PLAY](https://d954mas.github.io/defold-box2d-light-demo/)
+
+---
+**If you like that. You can support me on patreon.
+It will help me make more items for defold.**
+
 [![](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/d954mas)
 
-[PLAY](https://d954mas.github.io/defold-box2d-light-demo/)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/d954mas)
+---
 
 # Light
 
