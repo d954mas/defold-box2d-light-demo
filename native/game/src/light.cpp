@@ -1,6 +1,7 @@
 #include "light.h"
 #include "game_utils.h"
 #include <math.h>
+#include <algorithm>
 
 #include <world.h>
 #include <filter.h>
