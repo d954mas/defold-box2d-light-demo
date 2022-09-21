@@ -75,10 +75,14 @@ cjson.decode_invalid_numbers(false)
 ---@type LevelTilesets
 local TILESETS
 
+function M.get_tilesets()
+	return TILESETS
+end
+
 local function parse_tilesets(path)
 	assert(path)
 	print("parse tilesets")
-	assert(not TILESETS, "tileset already loaded")
+	--assert(not TILESETS, "tileset already loaded")
 
 	local tiled = dofile(path)
 	local id_to_tile = {}
@@ -114,6 +118,8 @@ local function parse_tilesets(path)
 	TILESETS = { by_id = id_to_tile, tilesets = tilesets }
 	print("parse tilesets done")
 end
+
+M.parse_tilesets = parse_tilesets
 
 ---@return LevelData
 local function create_map_data(tiled)

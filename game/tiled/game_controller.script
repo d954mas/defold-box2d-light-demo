@@ -1,6 +1,33 @@
 local GAME_WORLD = require "world.game.game_world"
 local WORLD = require "world.world"
 local LEVELS = require "world.game.levels.levels"
+local PARSER = require "assets.bundle.common.levels.parser.parser"
+local TILESETS = require "world.game.levels.tilesets"
+
+local function parse_levels()
+	--pack all runtime levels
+	--load runtime_1 level
+	PARSER.set_tilesets(TILESETS)
+	local path = "assets\\bundle\\common\\levels\\"
+	local level_path = path .. "editor\\lua"
+	local tilesets_path = path .. "tilesets"
+	local result_path = path ..  "editor\\result"
+
+	PARSER.parse_tilesets(lfs.currentdir() .. "\\" .. tilesets_path .. "\\" .. "tilesets.lua")
+	local json = cjson.encode(PARSER.get_tilesets())
+	local file_save = assert(io.open(lfs.currentdir() .. "\\" .. result_path .. "\\" .. "tileset.json", "w+"))
+	file_save:write(json)
+	file_save:close()
+
+	for file in lfs.dir(lfs.currentdir() .. "\\" .. level_path) do
+		if file ~= "." and file ~= ".." then
+			print("parse level:" .. file)
+			PARSER.parse_level(lfs.currentdir() .. "\\" .. level_path .. "\\" .. file,
+					lfs.currentdir() .. "\\" .. result_path .. "\\")
+		end
+	end
+end
+
 
 function init(self)
 	WORLD.game:level_loaded(LEVELS.load_level(LEVELS.LEVELS_LIST[LEVELS.CURRENT_LEVEL_IDX]))
@@ -19,4 +46,6 @@ end
 function on_input(self, action_id, action)
 	WORLD.game:on_input(action_id, action)
 end
+
+
 
